@@ -124,12 +124,11 @@ fn main() -> Result<()> {
         eprintln!("ERROR: no input was provided");
     })?;
     let mut content = Vec::new();
-    let mut file = File::open(&file_path).map_err(|err| {
-        eprintln!("ERROR: could not read file {file_path}: {err}");
-    })?;
-    file.read_to_end(&mut content).map_err(|err| {
-        eprintln!("ERROR: could not read file {file_path}: {err}");
-    })?;
+    File::open(&file_path)
+        .and_then(|mut file| file.read_to_end(&mut content))
+        .map_err(|err| {
+            eprintln!("ERROR: could not read file {file_path}: {err}");
+        })?;
     let mut pdf_parser = PdfParser::from_bytes(&content);
 
     while let Some(token) = pdf_parser.next_token() {
